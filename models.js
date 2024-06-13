@@ -7,15 +7,15 @@ const replySchema = new Schema({
     text: { type: String },
     delete_password: { type: String },
     reported: { type: Boolean, default: false },
-    created_on: { type: date, default: date },
-    bumped_on: { type: date, default: date },
+    created_on: { type: Date, default: date },
+    bumped_on: { type: Date, default: date },
     });
 const threadSchema = new Schema({
     text: { type: String },
     delete_password: { type: String },
     reported: { type: Boolean, default: false },
-    created_on: { type: date, default: date },
-    bumped_on: { type: date, default: date },
+    created_on: { type: Date, default: date },
+    bumped_on: { type: Date, default: date },
     replies: { type: [replySchema]}
 });
 const boardSchema = new Schema({

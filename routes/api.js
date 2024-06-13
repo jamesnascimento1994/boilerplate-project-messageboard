@@ -18,37 +18,35 @@ module.exports = function (app) {
       replies: []
     });
     console.log("new thread", newThread);
-  //   BoardModel.findOne({ name: board }, (err, boardData) => {
-  //     if (!boardData) {
-  //       const newBoard = new BoardModel({
-  //         name: board,
-  //         threads: []
-  //       });
-  //       console.log("new board", newBoard);
-  //       newBoard.threads.push(newThread);
-  //       newBoard.save((err, data) => {
-  //         console.log("new board data", data);
-  //         if (err || data) {
-  //           console.log(err);
-  //           res.send("There was an error saving post.");
-  //         } else {
-  //           res.json(newThread);
-  //         }
-  //       });
-  //     } else {
-  //       boardData.threads.push(newThread);
-  //       boardData.save((err, data) => {
-  //         if (err || data) {
-  //           console.log(err);
-  //           res.send("There was an error saving post.");
-  //         } else {
-  //           res.json(newThread);
-  //         }
-  //       });
-  //     }
-  //   });
-  // });
-    
+    BoardModel.findOne({ name: board }, (err, boardData) => {
+      if (!boardData) {
+        const newBoard = new BoardModel({
+          name: board,
+          threads: []
+        });
+        console.log("new board", newBoard);
+        newBoard.threads.push(newThread);
+        newBoard.save((err, data) => {
+          console.log("new board data", data);
+          if (err || data) {
+            console.log(err);
+            res.send("There was an error saving post.");
+          } else {
+            res.json(newThread);
+          }
+        });
+      } else {
+        boardData.threads.push(newThread);
+        boardData.save((err, data) => {
+          if (err || data) {
+            console.log(err);
+            res.send("There was an error saving post.");
+          } else {
+            res.json(newThread);
+          }
+        });
+      }
+    });
   });
   app.route('/api/replies/:board');
 }
