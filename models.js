@@ -3,6 +3,13 @@ const { Schema } = mongoose;
 
 const date = new Date();
 
+const replySchema = new Schema({
+    text: { type: String },
+    delete_password: { type: String },
+    reported: { type: Boolean, default: false },
+    created_on: { type: date, default: date },
+    bumped_on: { type: date, default: date },
+    });
 const threadSchema = new Schema({
     text: { type: String },
     delete_password: { type: String },
@@ -10,13 +17,6 @@ const threadSchema = new Schema({
     created_on: { type: date, default: date },
     bumped_on: { type: date, default: date },
     replies: { type: [replySchema]}
-});
-const replySchema = new Schema({
-    text: { type: String },
-    delete_password: { type: String },
-    reported: { type: Boolean, default: false },
-    created_on: { type: date, default: date },
-    bumped_on: { type: date, default: date },
 });
 const boardSchema = new Schema({
     name: { type: String },
