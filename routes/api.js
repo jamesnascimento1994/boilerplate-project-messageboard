@@ -18,7 +18,7 @@ module.exports = function (app) {
       replies: []
     });
     console.log("new thread", newThread);
-    BoardModel.findOne({ name: board }, (err, boardData) => {
+    BoardModel.findOne({ name: board }).then(boardData => {
       if (!boardData) {
         const newBoard = new BoardModel({
           name: board,
