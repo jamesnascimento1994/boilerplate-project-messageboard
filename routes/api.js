@@ -26,7 +26,7 @@ module.exports = function (app) {
         });
         console.log("new board", newBoard);
         newBoard.threads.push(newThread);
-        newBoard.save((err, data) => {
+        newBoard.save().then((err, data) => {
           console.log("new board data", data);
           if (err || data) {
             console.log(err);
@@ -37,7 +37,7 @@ module.exports = function (app) {
         });
       } else {
         boardData.threads.push(newThread);
-        boardData.save((err, data) => {
+        boardData.save().then((err, data) => {
           if (err || data) {
             console.log(err);
             res.send("There was an error saving post.");
