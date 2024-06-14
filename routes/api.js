@@ -26,27 +26,24 @@ module.exports = function (app) {
         });
         console.log("new board", newBoard);
         newBoard.threads.push(newThread);
-        newBoard.save().then((err, data) => {
+        newBoard.save().then(data => {
           console.log("new board data", data);
-          if (err || !data) {
-            console.log(err);
-            res.send("There was an error saving post.");
-          } else {
-            res.json(newThread);
-          }
+          res.json(newThread);
+        }).catch(err => {
+          console.log(err);
+          res.send("There was an error saving post.");
         });
       } else {
         boardData.threads.push(newThread);
-        boardData.save().then((err, data) => {
-          if (err || !data) {
-            console.log(err);
-            res.send("There was an error saving post.");
-          } else {
-            res.json(newThread);
-          }
+        boardData.save().then(data => {
+          console.log("new board data", data);
+          res.json(newThread);
+        }).catch(err => {
+          console.log(err);
+          res.send("There was an error saving post.");
         });
       }
     });
-  });
+  })
   app.route('/api/replies/:board');
 }
