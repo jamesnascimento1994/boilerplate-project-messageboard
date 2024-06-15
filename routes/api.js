@@ -71,6 +71,19 @@ module.exports = function (app) {
         });
         res.json(threadsObj);
     }).catch(() => res.json({ error: "No board with this name." }));
+  }).put((req, res) => {
+    console.log("put", req.body);
+    const { report_id } = req.body;
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(boardData => {
+      const date = new Date();
+      let reportedThread = boardData.threads.id(report_id);
+      reportedThread.reported = true;
+      reportedThread.bumped_on = date;
+      boardData.save()
+      .then(() => res.send("Update successful"))
+      .catch(() => res.json({error: "Could not update"}));
+    }).catch(() => res.json({ error: "Board not found"}));
   })
   app.route('/api/replies/:board');
 }
