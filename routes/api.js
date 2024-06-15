@@ -43,7 +43,34 @@ module.exports = function (app) {
           res.send("There was an error saving post.");
         });
       }
-    });
+    }).catch(() => res.send("Could not create board."));
+  }).get((req, res) => {
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(data => {
+      console.log("data", data);
+        const threadsObj = data.threads.map(thread => {
+          const {
+            _id,
+            text,
+            created_on,
+            bumped_on,
+            reported,
+            delete_password,
+            replies
+          } = thread;
+          return {
+            _id,
+            text,
+            created_on,
+            bumped_on,
+            reported,
+            delete_password,
+            replies,
+            replycount: replies.length
+          };
+        });
+        res.json(threadsObj);
+    }).catch(() => res.json({ error: "No board with this name." }));
   })
   app.route('/api/replies/:board');
 }
