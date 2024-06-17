@@ -84,6 +84,21 @@ module.exports = function (app) {
       .then(() => res.send("Update successful"))
       .catch(() => res.json({error: "Could not update"}));
     }).catch(() => res.json({ error: "Board not found"}));
+  }).delete((req, res) => {
+    console.log("delete", req.body);
+    const { thread_id, delete_password } = req.body;
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(boardData => {
+      if (boardData.threads.delete_password === delete_password) {
+        boardData.threads.deleteOne(thread_id);
+      } else {
+        res.send("Incorrect Password.")
+        return;
+      }
+      boardData.save()
+      .then(() => res.send("Delete successful"))
+      .catch(() => res.json({ error: "Could not delete."}));
+    }).catch(() => res.json({ error: "Board not found"}));
   })
   app.route('/api/replies/:board');
 }
