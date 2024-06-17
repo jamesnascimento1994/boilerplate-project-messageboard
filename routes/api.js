@@ -99,6 +99,23 @@ module.exports = function (app) {
       .then(() => res.send("Delete successful"))
       .catch(() => res.json({ error: "Could not delete."}));
     }).catch(() => res.json({ error: "Board not found"}));
+  });
+  app.route('/api/replies/:board').post((req, res) => {
+    console.log("thread", req.body);
+    const { thread_id, text, delete_password } = req.body;
+    const board = req.params.board;
+    const newReply = new ReplyModel({
+      text: text,
+      delete_password: delete_password
+    });
+    BoardModel.find({ name: board }).then(boardData => {
+      const date = new Date();
+      let repliedThread = boardData.threads.id(thread_id)
+      repliedThread.bumped_on = date;
+      repliedThread.replies.push(newReply);
+      boardData.save()
+      .then(updatedData => res.json(updatedData))
+      .catch(() => res.json({ error: "Could not add reply."}));
+    })
   })
-  app.route('/api/replies/:board');
 }
