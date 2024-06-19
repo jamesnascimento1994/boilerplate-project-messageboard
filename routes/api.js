@@ -111,15 +111,54 @@ module.exports = function (app) {
     });
     BoardModel.findOne({ name: board }).then((boardData) => {
       if (!boardData) {
-        res.json("error", "Board not found");
+        res.json({ error: "Board not found" });
       } else {
-        let threadToAddReply = boardData.threads.id(thread_id);
-        threadToAddReply.bumped_on = date;
-        threadToAddReply.replies.push(newReply);
+        let repliedThread = boardData.threads.id(thread_id);
+        repliedThread.bumped_on = date;
+        repliedThread.replies.push(newReply);
         boardData.save().then((updatedData) => {
           res.json(updatedData);
         }).catch(() => res.json({ error: "could not save"}));
       }
-    }).catch(() => res.json({ error: "Could not find board."}));
+    }).catch(err => res.json({ error: err }));
+  }).get((req, res) => {
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(data => {
+      const thread = data.threads.id(req.query.thread_id);
+      res.json(thread);
+    }).catch(() => res.json({ error: "Board not found" }))
+  }).put((req, res) => {
+    const { thread_id, reply_id } = req.body;
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(data => {
+      let thread = data.threads.id(thread_id);
+      let reply = thread.replies.id(reply_id);
+      reply.reported = true;
+      reply.bumped_on = new Date();
+      data.save()
+      .then(updatedData => {
+        res.send("Success");
+      })
+      .catch(() => res.json({ error: "could not update"}));
+    }).catch(() => res.json({ error: "could not find board"}));
+  }).delete((req, res) => {
+    console.log("put", req.body);
+    const { thread_id, reply_id, delete_password } = req.body;
+    const board = req.params.board;
+    BoardModel.findOne({ name: board }).then(data => {
+      let thread = data.threads.id(thread_id);
+      let reply = thread.replies.id(reply_id);
+      if (reply.delete_password === delete_password) {
+        thread.replies.deleteOne(reply_id);
+      } else {
+        res.send("Incorrect Password");
+        return;
+      }
+      data.save()
+      .then(() => {
+        res.send("Success")
+      })
+      .catch(() => res.json({ error: "could not delete"}));
+    }).catch(() => res.json({ error: "could not find board"}));
   })
 }
