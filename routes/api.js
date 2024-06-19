@@ -101,21 +101,25 @@ module.exports = function (app) {
     }).catch(() => res.json({ error: "Board not found"}));
   });
   app.route('/api/replies/:board').post((req, res) => {
-    console.log("thread", req.body);
+    const date = new Date();
     const { thread_id, text, delete_password } = req.body;
     const board = req.params.board;
     const newReply = new ReplyModel({
       text: text,
-      delete_password: delete_password
+      delete_password: delete_password,
+      created_on: date,
     });
-    BoardModel.find({ name: board }).then(boardData => {
-      const date = new Date();
-      let repliedThread = boardData.threads.id(thread_id)
-      repliedThread.bumped_on = date;
-      repliedThread.replies.push(newReply);
-      boardData.save()
-      .then(updatedData => res.json(updatedData))
-      .catch(() => res.json({ error: "Could not add reply."}));
-    })
+    BoardModel.findOne({ name: board }).then((boardData) => {
+      if (!boardData) {
+        res.json("error", "Board not found");
+      } else {
+        let threadToAddReply = boardData.threads.id(thread_id);
+        threadToAddReply.bumped_on = date;
+        threadToAddReply.replies.push(newReply);
+        boardData.save().then((updatedData) => {
+          res.json(updatedData);
+        }).catch(() => res.json({ error: "could not save"}));
+      }
+    }).catch(() => res.json({ error: "Could not find board."}));
   })
 }
